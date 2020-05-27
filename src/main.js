@@ -1,6 +1,7 @@
 import Vue from 'vue'
-import Vuetify from '@/plugin/vuetify'
+import Vuetify from 'vuetify'
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
+import 'vuetify/dist/vuetify.min.css'
 
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -32,11 +33,13 @@ if (process.env.NODE_ENV === 'production') {
 Vue.use(ElementUI, { locale })
 // Vue.use(ElementUI)
 Vue.use(Vuetify)
+export default new Vuetify({ })
 Vue.config.productionTip = false
 
 new Vue({
   el: '#app',
   router,
+  vuetify: new Vuetify(),
   store,
   render: h => h(App)
 })
