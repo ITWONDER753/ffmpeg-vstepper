@@ -1,85 +1,144 @@
 <template>
-  <div class="app-container">
-    <el-form ref="form" :model="form" label-width="120px">
-      <el-form-item label="Activity name">
-        <el-input v-model="form.name" />
-      </el-form-item>
-      <el-form-item label="Activity zone">
-        <el-select v-model="form.region" placeholder="please select your zone">
-          <el-option label="Zone one" value="shanghai" />
-          <el-option label="Zone two" value="beijing" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="Activity time">
-        <el-col :span="11">
-          <el-date-picker v-model="form.date1" type="date" placeholder="Pick a date" style="width: 100%;" />
-        </el-col>
-        <el-col :span="2" class="line">-</el-col>
-        <el-col :span="11">
-          <el-time-picker v-model="form.date2" type="fixed-time" placeholder="Pick a time" style="width: 100%;" />
-        </el-col>
-      </el-form-item>
-      <el-form-item label="Instant delivery">
-        <el-switch v-model="form.delivery" />
-      </el-form-item>
-      <el-form-item label="Activity type">
-        <el-checkbox-group v-model="form.type">
-          <el-checkbox label="Online activities" name="type" />
-          <el-checkbox label="Promotion activities" name="type" />
-          <el-checkbox label="Offline activities" name="type" />
-          <el-checkbox label="Simple brand exposure" name="type" />
-        </el-checkbox-group>
-      </el-form-item>
-      <el-form-item label="Resources">
-        <el-radio-group v-model="form.resource">
-          <el-radio label="Sponsor" />
-          <el-radio label="Venue" />
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="Activity form">
-        <el-input v-model="form.desc" type="textarea" />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit">Create</el-button>
-        <el-button @click="onCancel">Cancel</el-button>
-      </el-form-item>
-    </el-form>
-  </div>
+
+  <v-app>
+    <v-content>
+      <v-row justify="space-around">
+        <v-col cols="12">
+          <v-slider v-model="steps" label="Steps" min="2" max="20"></v-slider>
+        </v-col>
+        <v-switch v-model="vertical" label="Vertical"></v-switch>
+        <v-switch v-model="altLabels" label="altLabels"></v-switch>
+        <v-switch v-model="editable" label="Editable"></v-switch>
+      </v-row>
+      <v-stepper
+        v-model="e1"
+        :vertical="vertical"
+        :alt-labels="altLabels"
+      >
+        <template v-if="vertical">
+          <template v-for="n in steps">
+            <v-stepper-step
+              :key="`${n}-step`"
+              :complete="e1 > n"
+              :step="n"
+              :editable="editable"
+            >
+              Step {{ n }}
+            </v-stepper-step>
+
+            <v-stepper-content
+              :key="`${n}-content`"
+              :step="n"
+            >
+              <v-card
+                class="mb-12"
+                color="grey lighten-1"
+                height="200px"
+              ></v-card>
+
+              <v-btn
+                color="primary"
+                @click="nextStep(n)"
+              >
+                Continue
+              </v-btn>
+
+              <v-btn text>Cancel</v-btn>
+            </v-stepper-content>
+          </template>
+        </template>
+        <template v-else>
+          <v-stepper-header>
+            <template v-for="n in steps">
+              <v-stepper-step
+                :key="`${n}-step`"
+                :complete="e1 > n"
+                :step="n"
+                :editable="editable"
+              >
+                Step {{ n }}
+              </v-stepper-step>
+
+              <v-divider
+                v-if="n !== steps"
+                :key="n"
+              ></v-divider>
+            </template>
+          </v-stepper-header>
+
+          <v-stepper-items>
+            <v-stepper-content
+              v-for="n in steps"
+              :key="`${n}-content`"
+              :step="n"
+            >
+              <v-card
+                class="mb-12"
+                color="grey lighten-1"
+                height="200px"
+              ></v-card>
+
+              <v-btn
+                color="primary"
+                @click="nextStep(n)"
+              >
+                Continue
+              </v-btn>
+
+              <v-btn text>Cancel</v-btn>
+            </v-stepper-content>
+          </v-stepper-items>
+        </template>
+      </v-stepper>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
+  export default {
+    data () {
+      return {
+        e1: 1,
+        steps: 2,
+        vertical: false,
+        altLabels: false,
+        editable: true,
       }
-    }
-  },
-  methods: {
-    onSubmit() {
-      this.$message('submit!')
     },
-    onCancel() {
-      this.$message({
-        message: 'cancel!',
-        type: 'warning'
-      })
-    }
+    watch: {
+      steps (val) {
+        if (this.e1 > val) {
+          this.e1 = val
+        }
+      },
+      vertical () {
+        this.e1 = 2
+        requestAnimationFrame(() => this.e1 = 1) // Workarounds
+      },
+    },
+    methods: {
+      onInput (val) {
+        this.steps = parseInt(val)
+      },
+      nextStep (n) {
+        if (n === this.steps) {
+          this.e1 = 1
+        } else {
+          this.e1 = n + 1
+        }
+      },
+    },
   }
-}
 </script>
 
-<style scoped>
-.line{
-  text-align: center;
+<style lang="scss" scoped>
+.dashboard {
+  &-container {
+    margin: 30px;
+  }
+  &-text {
+    font-size: 30px;
+    line-height: 46px;
+  }
 }
 </style>
-

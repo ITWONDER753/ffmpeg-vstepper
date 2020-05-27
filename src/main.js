@@ -1,5 +1,5 @@
 import Vue from 'vue'
-
+import Vuetify from '@/plugin/vuetify'
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 
 import ElementUI from 'element-ui'
@@ -31,7 +31,7 @@ if (process.env.NODE_ENV === 'production') {
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
 // Vue.use(ElementUI)
-
+Vue.use(Vuetify)
 Vue.config.productionTip = false
 
 new Vue({
